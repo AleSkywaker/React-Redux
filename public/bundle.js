@@ -699,6 +699,8 @@ function compose() {
 "use strict";
 
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _redux = __webpack_require__(8);
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -710,8 +712,33 @@ var reducer = function reducer() {
 
     switch (action.type) {
         case "Post_book":
-            var books = state.books.concat(action.payload);
+            //let books = state.books.concat(action.payload)
+            //return books
             return { books: [].concat(_toConsumableArray(state.books), _toConsumableArray(action.payload)) };
+        case "Delete_book":
+            //Crear copia del actual array de books
+            var currentBookToDelete = [].concat(_toConsumableArray(state.books));
+            //Determinar que index del array de book vamos a eliminar
+            var indexToDelete = currentBookToDelete.findIndex(function (book) {
+                return book.id === action.payload.id;
+            });
+            //usar slice para eliminar book en el indice expecificado
+            return { books: [].concat(_toConsumableArray(currentBookToDelete.slice(0, indexToDelete)), _toConsumableArray(currentBookToDelete.slice(indexToDelete + 1))) };
+        case "update_book":
+            //Crear copia del actual array de books
+            var currentBookToUpdate = [].concat(_toConsumableArray(state.books));
+            //Determinar que index del array de book vamos a actualizar
+            var indexToUpdate = currentBookToUpdate.findIndex(function (book) {
+                return book.id === action.payload.id;
+            });
+            // Crear un nuevo book object con los nuevos valores y con el mismo array index que tiene el elemento que 
+            // queremos reemplazar, vamos a utlizar spread pero podriamos utilizar concat.
+            var newBookToUpdate = _extends({}, currentBookToUpdate[indexToUpdate], {
+                titulo: action.payload.titulo
+                // hacemos log para ver el como el libro actualizado
+            });console.log("Como es el libro actualizado", newBookToUpdate);
+            //usamos slice para eliminar el libro con el indice especificado y reemplazarlo con el nuevo objeto.
+            return { books: [].concat(_toConsumableArray(currentBookToUpdate.slice(0, indexToUpdate)), [newBookToUpdate], _toConsumableArray(currentBookToUpdate.slice(indexToUpdate + 1))) };
     }
     return state;
 };
@@ -750,6 +777,17 @@ store.dispatch({
         precio: '100€',
         descripcion: "Ciencia ficcion"
     }]
+});
+// Delete a book
+/*store.dispatch({
+    type: "Delete_book",
+    payload: { id: 1 }
+})*/
+// Update a book
+store.dispatch({
+    type: "update_book",
+    payload: { id: 3,
+        titulo: "Regreso al futuro III" }
 });
 
 /***/ }),
