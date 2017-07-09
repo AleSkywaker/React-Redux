@@ -1,26 +1,25 @@
 'use strict'
-
-import { createStore } from 'redux';
+import {applyMiddleware, createStore} from 'redux';
+import logger from 'redux-logger';
 
 // IMPORT COMBINED REDUCERS
 import reducers from './reducers/index'
-
-
-
+//IMPORT ACTIONS
+import { addToCart } from './actions/cartActions'
+import { postBooks, deleteBooks, updateBook } from './actions/booksActions'
 
 //Step 1 create the Store
-const store = createStore(reducers);
+const middleware =applyMiddleware(logger);
+const store = createStore(reducers, middleware);
 
-store.subscribe(function () {
+/*store.subscribe(function () {
     console.log('current state is: ', store.getState());
-    //console.log('El precio es : ' , store.getState()[0].precio);
-})
+    console.log('El precio es : ' , store.getState()[0].precio);
+})*/
 
 //Step 2 create and dispatch actions
-store.dispatch({
-    type: "Post_book",
-
-    payload:
+//Post books
+store.dispatch(postBooks(
     [{
         id: 1,
         titulo: "harry porter",
@@ -33,33 +32,15 @@ store.dispatch({
         precio: '400€',
         descripcion: "aventruas"
     }]
-})
-
-// Dispatch  a second action
-store.dispatch({
-    type: "Post_book",
-    payload:
-    [{
-        id: 3,
-        titulo: "Regreso al futuro",
-        precio: '100€',
-        descripcion: "Ciencia ficcion"
-    }]
-})
+))
 // Delete a book
-store.dispatch({
-    type: "Delete_book",
-    payload: { id: 1 }
-})
+store.dispatch(deleteBooks({ id: 1 }))
 // Update a book
-store.dispatch({
-    type: "update_book",
-    payload: { id: 3,
-    titulo: "Regreso al futuro III" }
-})
-
+store.dispatch(updateBook
+    ({
+        id: 3,
+        titulo: "Regreso al futuro III"
+    }))
 // ACCIONES DE CART
-store.dispatch({
-    type: "add_to_cart",
-    payload: [{ id: 3 }]
-})
+store.dispatch(addToCart([{ id: 1 }]))
+
